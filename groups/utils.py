@@ -23,3 +23,4 @@ def get_user_info(token):
     except Exception as e:
         logging.error(f"Ошибка при отправке запроса в auth_service: {str(e)}")
         return None
+        
