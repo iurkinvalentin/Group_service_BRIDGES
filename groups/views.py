@@ -3,21 +3,21 @@ from .models import Group
 from .serializers import GroupSerializer
 from rest_framework.response import Response
 from .utils import get_user_info
+import logging
+from rest_framework import permissions
 
 
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
+class GroupViewSet(viewsets.ViewSet):
+    """Унифицированное представление для работы с группами"""
+    queryset = Group.objects.all()  # Добавляем атрибут queryset
     serializer_class = GroupSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        group = self.get_object()
-        owner_info = get_user_info(group.owner_id)  # Получаем данные о владельце группы
-        members_info = [get_user_info(member_id) for member_id in group.members]  # Получаем данные об участниках
-
-        # Формируем ответ с полной информацией о группе, владельце и участниках
-        group_data = {
-            "group": GroupSerializer(group).data,
-            "owner": owner_info,
-            "members": members_info,
-        }
-        return Response(group_data)
+    def list(self, request):
+        # Извлекаем заголовок Authorization
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        print(token)
+        # Логика работы с токеном
+        user_data = get_user_info(token)
+        # Продолжение логики
+        return Response({"message": "Запрос успешно обработан", "user": user_data})
